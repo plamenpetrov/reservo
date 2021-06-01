@@ -1,0 +1,24 @@
+version: '3.5'
+services:
+  app:
+    container_name: reservo
+    build:
+      context: ./
+      dockerfile: docker/app/Dockerfile
+      args:
+        APP_NAME: ${ARTIFACT_NAME}
+        APP_VERSION: ${ARTIFACT_VERSION}
+        DOCKER_RELATIVE_PATH: docker/app/
+    env_file:
+      - .env
+    volumes:
+      - "/tmp/.m2:/root/.m2"
+    ports:
+      - "8081:8081"
+    networks:
+      - local-app-network
+
+networks:
+  local-app-network:
+    external:
+      name: local-app-network

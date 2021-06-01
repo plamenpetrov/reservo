@@ -1,0 +1,59 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: reservo
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_CREDENTIALS_USERNAME}
+    password: ${DB_CREDENTIALS_PASSWORD}
+    driver-class-name: "com.mysql.cj.jdbc.Driver"
+    hikari:
+      connection-test-query: SELECT 1
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+#  mvc:
+#    format:
+#      date: yyyy-MM-dd
+#      date-time: yyyy-MM-dd HH:mm:ss
+#      time: HH:mm:ss
+
+logging:
+  level:
+    com.pp: DEBUG
+    org:
+      springframework:
+        web: debug
+      hibernate: error
+
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure.include: health, env
+      exposure.exclude: metrics, info, scheduledtasks, threaddump, heapdump, shutdown
+  health:
+    vault:
+      enabled: false
+    binders:
+      enabled: false
+  endpoint:
+    shutdown:
+      enabled: false
+
+reservo:
+  application:
+    version: ${APP_VERSION}
+    settings:
+      db-timezone: Europa/Sofia
+  auth:
+    basic:
+      username: ${BASIC_AUTH_USERNAME}
+      password: ${BASIC_AUTH_PASSWORD}
+
+springfox.documentation.swagger.v2.path: /api-docs/swagger.json
+
