@@ -3,10 +3,10 @@ package com.pp.reservo.infrastructure.ports;
 import com.pp.reservo.domain.dto.ReservationDTO;
 import com.pp.reservo.domain.entities.Reservation;
 import com.pp.reservo.domain.models.requests.CreateReservationRequest;
-import com.pp.reservo.domain.repositories.specification.ReservationSpecification;
 import com.pp.reservo.infrastructure.exceptions.EntityNotFoundException;
 import com.pp.reservo.infrastructure.services.ReservationService;
 import org.modelmapper.ModelMapper;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -34,8 +35,9 @@ public class ReservationController {
     }
 
     @GetMapping
-    public List<ReservationDTO> getReservations() {
-        return reservationService.getAllReservations();
+    public List<ReservationDTO> getReservations(@RequestParam(required = false)
+                                                            @DateTimeFormat(pattern = "yyyy-MM-dd") Date byDate) {
+        return reservationService.getAllReservations(byDate);
     }
 
     @RequestMapping(

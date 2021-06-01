@@ -7,12 +7,16 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class ReservationSpecification implements Specification<Reservation> {
 
-    private final String byDate;
+    private final Date byDate;
 
-    public ReservationSpecification(String byDate) {
+    public ReservationSpecification(Date byDate) {
         this.byDate = byDate;
     }
 
@@ -20,9 +24,10 @@ public class ReservationSpecification implements Specification<Reservation> {
     public Predicate toPredicate(Root<Reservation> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
         Predicate p = criteriaBuilder.conjunction();
 
+        System.out.println(byDate.getTime());
         if (byDate != null) {
             p.getExpressions().add(
-                criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(root.get("startAt"), byDate))
+                criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(root.get("startAt"), convertToLocalDateTimeViaInstant(byDate)))
             );
         }
 
@@ -43,4 +48,14 @@ public class ReservationSpecification implements Specification<Reservation> {
 
         return p;
     }
+
+    public Timestamp convertToLocalDateTimeViaInstant(Date dateToConvert) {
+        String pattern = "EEE MMM dd HH:mm:ss z yyyy";
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        LocalDateTime localDateTime = LocalDateTime.from(formatter.parse(dateToConvert.toString()));
+
+        return Timestamp.valueOf(localDateTime);
+    }
+
 }
