@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(
-        value = "/api/appointments/",
+        value = "/api/appointments",
         produces = {MediaType.APPLICATION_JSON_VALUE}
 )
 public class AppointmentController {
@@ -51,7 +51,7 @@ public class AppointmentController {
 
     @DeleteMapping("/{appointmentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteClient(@PathVariable Integer appointmentId) {
+    public void deleteAppointment(@PathVariable Integer appointmentId) {
         appointmentService.deleteAppointment(appointmentId);
     }
 }

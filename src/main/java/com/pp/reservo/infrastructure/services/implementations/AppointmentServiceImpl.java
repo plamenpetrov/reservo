@@ -3,6 +3,7 @@ package com.pp.reservo.infrastructure.services.implementations;
 import com.pp.reservo.domain.dto.AppointmentDTO;
 import com.pp.reservo.domain.entities.Appointment;
 import com.pp.reservo.domain.repositories.AppointmentRepository;
+import com.pp.reservo.infrastructure.exceptions.EntityNotFoundException;
 import com.pp.reservo.infrastructure.services.AppointmentService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         return this.appointmentRepository
                 .findById(appointmentId)
                 .map(a -> this.modelMapper.map(a, AppointmentDTO.class))
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Appointment with the given id was not found!"));
     }
 
     @Override

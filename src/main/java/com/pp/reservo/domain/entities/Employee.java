@@ -18,7 +18,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "employes")
-public class Employe {
+public class Employee {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -30,7 +30,7 @@ public class Employe {
     private String name;
 
     @Column(name = "active", nullable = false)
-    private Boolean active;
+    private Boolean active = true;
 
     @Column(name = "created_at", nullable = false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;

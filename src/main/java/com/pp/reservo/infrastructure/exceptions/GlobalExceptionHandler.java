@@ -12,16 +12,15 @@ import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     public static final String VALIDATION_ERROR = "Validation error";
     public static final String VALIDATION_ERROR_DESCRIPTION = "Provided payload is invalid";
+    private static final String NOT_FOUND_ERROR = "Entity not found";
+    private static final String NOT_FOUND_DESCRIPTION_ERROR = "Entity does not exists";
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -39,7 +38,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ValidationErrors(VALIDATION_ERROR, VALIDATION_ERROR_DESCRIPTION, errorList), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({ ConstraintViolationException.class })
+    @ExceptionHandler({ ConstraintViolationException.class, IllegalArgumentException.class })
     public ResponseEntity handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {
         Map<String, List<String>> errorList = new HashMap<>();
 
@@ -51,6 +50,15 @@ public class GlobalExceptionHandler {
         }
 
         return new ResponseEntity<>(new ValidationErrors(VALIDATION_ERROR, VALIDATION_ERROR_DESCRIPTION, errorList), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ EntityNotFoundException.class })
+    public ResponseEntity handleEntityNotFound(EntityNotFoundException ex, WebRequest request) {
+        Map<String, List<String>> errorList = new HashMap<>();
+
+        errorList.put("error", Collections.singletonList(ex.getMessage()));
+
+        return new ResponseEntity<>(new ValidationErrors(NOT_FOUND_ERROR, NOT_FOUND_DESCRIPTION_ERROR, errorList), HttpStatus.BAD_REQUEST);
     }
 
     private List<String> addMessage(String exception) {

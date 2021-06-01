@@ -11,7 +11,7 @@ public interface ClientService {
 
     ClientDTO addClient(ClientDTO clientDTO);
 
-    List<ClientDTO> getReservationsByClientId(Integer client);
-
     void deleteClient(Integer clientId);
+
+//    List<ClientDTO> getReservationsByClientId(Integer client);
 }

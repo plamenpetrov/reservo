@@ -4,6 +4,7 @@ import com.pp.reservo.domain.entities.Client;
 import com.pp.reservo.domain.dto.ClientDTO;
 import com.pp.reservo.domain.repositories.ClientRepository;
 import com.pp.reservo.domain.repositories.ReservationRepository;
+import com.pp.reservo.infrastructure.exceptions.EntityNotFoundException;
 import com.pp.reservo.infrastructure.services.ClientService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,8 @@ public class ClientServiceImpl implements ClientService {
         return this.clientRepository
                 .findById(clientId)
                 .map(c -> this.modelMapper.map(c, ClientDTO.class))
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Client with the given id was not found!"));
     }
 
     public ClientDTO addClient(ClientDTO clientDTO) {
@@ -47,17 +49,17 @@ public class ClientServiceImpl implements ClientService {
         return clientDTO;
     }
 
-    public List<ClientDTO> getReservationsByClientId(Integer clientId) {
-        return this.clientRepository.findAll()
-                .stream()
-                .filter(client -> client.getReservationList().stream().anyMatch(reservationStream -> reservationStream.getClient().getId().equals(clientId)))
-                .map(client -> this.modelMapper.map(client, ClientDTO.class))
-                .collect(Collectors.toList());
-    }
-
     public void deleteClient(Integer clientId) {
         if(clientRepository.existsById(clientId)) {
             clientRepository.deleteById(clientId);
         }
     }
+
+//    public List<ClientDTO> getReservationsByClientId(Integer clientId) {
+//        return this.clientRepository.findAll()
+//                .stream()
+//                .filter(client -> client.getReservationList().stream().anyMatch(reservationStream -> reservationStream.getClient().getId().equals(clientId)))
+//                .map(client -> this.modelMapper.map(client, ClientDTO.class))
+//                .collect(Collectors.toList());
+//    }
 }

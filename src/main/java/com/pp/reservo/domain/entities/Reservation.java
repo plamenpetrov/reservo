@@ -1,15 +1,12 @@
 package com.pp.reservo.domain.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Required;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
 import java.sql.Timestamp;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -27,13 +24,13 @@ public class Reservation {
     private Integer id;
 
     @Column(name = "employe_id", nullable = false)
-    private Integer employeId;
+    private Integer employeeId;
 
     @Column(name = "appointment_id", nullable = false)
     private Integer appointmentId;
 
-//    @Column(name = "client_id", nullable = false)
-//    private Integer clientId;
+    @Column(name = "client_id", nullable = false)
+    private Integer clientId;
 
     @Column(name = "duration", nullable = false)
     @Min(0)
@@ -45,9 +42,9 @@ public class Reservation {
     @Column(name = "created_at", nullable = false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name="client_id", nullable = false)
-    private Client client;
+//    @JsonIgnore
+//    @ManyToOne
+//    @JoinColumn(name="client_id", nullable = false)
+//    private Client client;
 
 }

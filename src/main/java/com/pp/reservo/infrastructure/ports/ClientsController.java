@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(
-        value = "/api/clients/",
+        value = "/api/clients",
         produces = {MediaType.APPLICATION_JSON_VALUE}
 )
 public class ClientsController {
@@ -55,12 +55,11 @@ public class ClientsController {
             clientService.deleteClient(clientId);
     }
 
-    @RequestMapping(
-            value = "/{clientId}/reservations",
-            method = RequestMethod.GET
-    )
-    public List<ClientDTO> getClientReservations(@PathVariable(value = "clientId", required = false) Integer clientId) {
-        return clientService.getReservationsByClientId(clientId);
-    }
-
+//    @RequestMapping(
+//            value = "/{clientId}/reservations",
+//            method = RequestMethod.GET
+//    )
+//    public List<ClientDTO> getClientReservations(@PathVariable(value = "clientId", required = false) Integer clientId) {
+//        return clientService.getReservationsByClientId(clientId);
+//    }
 }

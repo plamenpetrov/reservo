@@ -1,6 +1,5 @@
 package com.pp.reservo.domain.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,8 +9,6 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -36,9 +33,9 @@ public class Client {
     @Column(name = "created_at", nullable = false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "client",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER)
-    private List<Reservation> reservationList = new ArrayList<>();
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "client",
+//            cascade = CascadeType.ALL,
+//            fetch = FetchType.EAGER)
+//    private List<Reservation> reservationList = new ArrayList<>();
 }
