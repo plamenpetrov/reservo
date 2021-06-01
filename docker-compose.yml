@@ -6,19 +6,34 @@ services:
       context: ./
       dockerfile: docker/app/Dockerfile
       args:
-        APP_NAME: ${ARTIFACT_NAME}
-        APP_VERSION: ${ARTIFACT_VERSION}
-        DOCKER_RELATIVE_PATH: docker/app/
+        APP_NAME: ${APP_NAME}
+        APP_VERSION: ${APP_VERSION}
+        APP_USERNAME: ${APP_USERNAME}
+    depends_on:
+      - mysql
     env_file:
       - .env
     volumes:
       - "/tmp/.m2:/root/.m2"
     ports:
-      - "8081:8081"
+      - "8082:8082"
     networks:
       - local-app-network
+  mysql:
+    container_name: mysql-instance
+    build:
+      context: docker/database
+      dockerfile: Dockerfile
+    ports:
+      - "3306:3306"
+    networks:
+      - local-app-network
+    env_file:
+      - .env
+    healthcheck:
+      test: "mysqladmin ping -u root -p$${DB_CREDENTIALS_PASSWORD}"
+      start_period: 30s
 
 networks:
   local-app-network:
-    external:
-      name: local-app-network
+    driver: "bridge"
