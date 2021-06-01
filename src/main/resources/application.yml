@@ -15,6 +15,7 @@ spring:
     hibernate:
       ddl-auto: create-drop
     open-in-view: false
+    database: mysql
 #  mvc:
 #    format:
 #      date: yyyy-MM-dd
