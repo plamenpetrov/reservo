@@ -82,6 +82,15 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.11.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka_2.13</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.1.49</version>
+		</dependency>
 	</dependencies>
 
 	<build>

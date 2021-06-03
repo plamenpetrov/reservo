@@ -24,7 +24,6 @@ public class ReservationSpecification implements Specification<Reservation> {
     public Predicate toPredicate(Root<Reservation> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
         Predicate p = criteriaBuilder.conjunction();
 
-        System.out.println(byDate.getTime());
         if (byDate != null) {
             p.getExpressions().add(
                 criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(root.get("startAt"), convertToLocalDateTimeViaInstant(byDate)))

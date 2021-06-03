@@ -29,11 +29,6 @@ public class CreateReservationRequest {
     @JsonProperty( "client_id")
     private Integer clientId;
 
-    @NotNull(message = "Duration is required and can not be empty")
-    @Min(1)
-    @JsonProperty( "duration")
-    private Integer duration;
-
     @DatetimeAllowed
     @JsonProperty( "start_at")
     private String startAt;

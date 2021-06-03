@@ -23,14 +23,17 @@ public class Reservation {
     @GeneratedValue(strategy = IDENTITY)
     private Integer id;
 
-    @Column(name = "employe_id", nullable = false)
-    private Integer employeeId;
+    @ManyToOne
+    @JoinColumn(name = "employe_id")
+    Employee employee;
 
-    @Column(name = "appointment_id", nullable = false)
-    private Integer appointmentId;
+    @ManyToOne
+    @JoinColumn(name = "appointment_id")
+    Appointment appointment;
 
-    @Column(name = "client_id", nullable = false)
-    private Integer clientId;
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    Client client;
 
     @Column(name = "duration", nullable = false)
     @Min(0)
@@ -41,10 +44,4 @@ public class Reservation {
 
     @Column(name = "created_at", nullable = false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;
-
-//    @JsonIgnore
-//    @ManyToOne
-//    @JoinColumn(name="client_id", nullable = false)
-//    private Client client;
-
 }

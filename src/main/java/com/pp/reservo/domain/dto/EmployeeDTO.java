@@ -3,7 +3,7 @@ package com.pp.reservo.domain.dto;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-public class EmployeeDTO {
+public class EmployeeDTO extends BaseDTO {
     private String name;
 
     public EmployeeDTO() {

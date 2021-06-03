@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import java.sql.Timestamp;
+import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -23,6 +24,7 @@ public class Appointment {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false)
     private Integer id;
 
     @Column(name = "name", nullable = false)
@@ -39,4 +41,7 @@ public class Appointment {
 
     @Column(name = "updated_at", nullable = true)
     private Timestamp updatedAt;
+
+    @OneToMany(mappedBy = "appointment", fetch = FetchType.EAGER)
+    List<Reservation> reservations;
 }

@@ -1,8 +1,8 @@
 package com.pp.reservo.infrastructure.ports;
 
+import com.pp.reservo.domain.dto.ClientDTO;
 import com.pp.reservo.domain.entities.Client;
 import com.pp.reservo.domain.models.requests.CreateClientRequest;
-import com.pp.reservo.domain.dto.ClientDTO;
 import com.pp.reservo.infrastructure.services.ClientService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -54,12 +54,4 @@ public class ClientsController {
     public void deleteClient(@PathVariable Integer clientId) {
             clientService.deleteClient(clientId);
     }
-
-//    @RequestMapping(
-//            value = "/{clientId}/reservations",
-//            method = RequestMethod.GET
-//    )
-//    public List<ClientDTO> getClientReservations(@PathVariable(value = "clientId", required = false) Integer clientId) {
-//        return clientService.getReservationsByClientId(clientId);
-//    }
 }

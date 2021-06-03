@@ -1,7 +1,8 @@
 package com.pp.reservo.infrastructure.services.implementations;
 
-import com.pp.reservo.domain.entities.Client;
 import com.pp.reservo.domain.dto.ClientDTO;
+import com.pp.reservo.domain.entities.Client;
+import com.pp.reservo.domain.models.response.ReservationsByClientResponseDTO;
 import com.pp.reservo.domain.repositories.ClientRepository;
 import com.pp.reservo.domain.repositories.ReservationRepository;
 import com.pp.reservo.infrastructure.exceptions.EntityNotFoundException;
@@ -20,9 +21,9 @@ public class ClientServiceImpl implements ClientService {
     private final ReservationRepository reservationRepository;
 
     public ClientServiceImpl(ModelMapper modelMapper, ClientRepository clientRepository, ReservationRepository reservationRepository) {
+        this.modelMapper = modelMapper;
         this.clientRepository = clientRepository;
         this.reservationRepository = reservationRepository;
-        this.modelMapper = modelMapper;
     }
 
     public List<ClientDTO> getAllClients() {
@@ -54,12 +55,4 @@ public class ClientServiceImpl implements ClientService {
             clientRepository.deleteById(clientId);
         }
     }
-
-//    public List<ClientDTO> getReservationsByClientId(Integer clientId) {
-//        return this.clientRepository.findAll()
-//                .stream()
-//                .filter(client -> client.getReservationList().stream().anyMatch(reservationStream -> reservationStream.getClient().getId().equals(clientId)))
-//                .map(client -> this.modelMapper.map(client, ClientDTO.class))
-//                .collect(Collectors.toList());
-//    }
 }

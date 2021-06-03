@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.sql.Timestamp;
+import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -22,6 +23,7 @@ public class Employee {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false)
     private Integer id;
 
     @Column(name = "name", nullable = false)
@@ -34,4 +36,7 @@ public class Employee {
 
     @Column(name = "created_at", nullable = false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;
+
+    @OneToMany(mappedBy = "employee", fetch = FetchType.EAGER)
+    List<Reservation> reservations;
 }
