@@ -12,6 +12,4 @@ public interface ClientService {
     ClientDTO addClient(ClientDTO clientDTO);
 
     void deleteClient(Integer clientId);
-
-//    List<ClientDTO> getReservationsByClientId(Integer client);
 }

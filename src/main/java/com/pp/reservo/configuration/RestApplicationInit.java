@@ -1,11 +1,18 @@
 package com.pp.reservo.configuration;
 
+import com.pp.reservo.domain.entities.Appointment;
+import com.pp.reservo.domain.entities.Client;
+import com.pp.reservo.domain.entities.Employee;
+import com.pp.reservo.domain.entities.Reservation;
 import com.pp.reservo.domain.repositories.AppointmentRepository;
 import com.pp.reservo.domain.repositories.ClientRepository;
 import com.pp.reservo.domain.repositories.EmployeeRepository;
 import com.pp.reservo.domain.repositories.ReservationRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
 
 @Component
 public class RestApplicationInit implements CommandLineRunner {
@@ -28,38 +35,40 @@ public class RestApplicationInit implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-//        ArrayList<Reservation> reservationArr = new ArrayList<>();
-//        reservationArr.add(new Reservation());
-//
-//        Client client = new Client(null, "Client one", new Timestamp(System.currentTimeMillis()), reservationArr);
-//        clientRepository.save(client);
-//
-//        Client client2 = new Client(null, "Client two", new Timestamp(System.currentTimeMillis()), reservationArr);
-//        clientRepository.save(client2);
-//
-//        Client client3 = new Client(null, "Client three", new Timestamp(System.currentTimeMillis()), reservationArr);
-//        clientRepository.save(client3);
-//
-//        Appointment appointment = new Appointment(null, "Haircut", 20, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
-//        Appointment appointment2 = new Appointment(null, "Manicure", 120, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
-//        Appointment appointment3 = new Appointment(null, "Pedicure", 60, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
-//
-//        appointmentRepository.save(appointment);
-//        appointmentRepository.save(appointment2);
-//        appointmentRepository.save(appointment3);
-//
-//        Employe employe = new Employe(null, "Employee one", true, new Timestamp(System.currentTimeMillis()));
-//        Employe employee2 = new Employe(null, "Employee two", false, new Timestamp(System.currentTimeMillis()));
-//        Employe employee3 = new Employe(null, "Employee three", true, new Timestamp(System.currentTimeMillis()));
-//
-//        employeeRepository.save(employe);
-//        employeeRepository.save(employee2);
-//        employeeRepository.save(employee3);
-//
-//        Reservation reservation = new Reservation(null, 1, 1, 1, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), client);
-//        Reservation reservation2 = new Reservation(null, 2, 2, 1, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), client);
-//
-//        reservationRepository.save(reservation);
-//        reservationRepository.save(reservation2);
+        ArrayList<Reservation> reservationArr = new ArrayList<>();
+        reservationArr.add(new Reservation());
+
+        Client client = new Client(null, "Client one", new Timestamp(System.currentTimeMillis()), reservationArr);
+        clientRepository.save(client);
+
+        Client client2 = new Client(null, "Client two", new Timestamp(System.currentTimeMillis()), reservationArr);
+        clientRepository.save(client2);
+
+        Client client3 = new Client(null, "Client three", new Timestamp(System.currentTimeMillis()), reservationArr);
+        clientRepository.save(client3);
+
+        Appointment appointment = new Appointment(null, "Haircut", 20, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), reservationArr);
+        Appointment appointment2 = new Appointment(null, "Manicure", 120, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), reservationArr);
+        Appointment appointment3 = new Appointment(null, "Pedicure", 60, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), reservationArr);
+
+        appointmentRepository.save(appointment);
+        appointmentRepository.save(appointment2);
+        appointmentRepository.save(appointment3);
+
+        Employee employee = new Employee(null, "Employee one", true, new Timestamp(System.currentTimeMillis()), reservationArr);
+        Employee employee2 = new Employee(null, "Employee two", false, new Timestamp(System.currentTimeMillis()), reservationArr);
+        Employee employee3 = new Employee(null, "Employee three", true, new Timestamp(System.currentTimeMillis()), reservationArr);
+
+        employeeRepository.save(employee);
+        employeeRepository.save(employee2);
+        employeeRepository.save(employee3);
+
+        Reservation reservation = new Reservation(null, employee, appointment, client, appointment.getDuration(), new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
+        Reservation reservation2 = new Reservation(null, employee2, appointment2, client2, appointment2.getDuration(), new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
+        Reservation reservation3 = new Reservation(null, employee3, appointment3, client, appointment3.getDuration(), new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
+
+        reservationRepository.save(reservation);
+        reservationRepository.save(reservation2);
+        reservationRepository.save(reservation3);
     }
 }

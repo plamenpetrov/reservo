@@ -56,5 +56,6 @@ reservo:
       username: ${BASIC_AUTH_USERNAME}
       password: ${BASIC_AUTH_PASSWORD}
 
-springfox.documentation.swagger.v2.path: /api-docs/swagger.json
-
+springdoc:
+  swagger-ui:
+    use-root-path: true
