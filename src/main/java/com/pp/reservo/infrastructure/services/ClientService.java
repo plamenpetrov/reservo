@@ -9,7 +9,7 @@ public interface ClientService {
 
     ClientDTO getClientById(Integer clientId);
 
-    ClientDTO addClient(ClientDTO clientDTO);
+    ClientDTO storeClient(ClientDTO clientDTO);
 
     void deleteClient(Integer clientId);
 }

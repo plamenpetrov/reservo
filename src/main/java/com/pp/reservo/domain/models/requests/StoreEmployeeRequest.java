@@ -8,20 +8,18 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class CreateAppointmentRequest {
+public class StoreEmployeeRequest {
+
+    @Min(1)
+    @JsonProperty( "employee_id")
+    private Integer employeeId;
 
     @NotEmpty(message = "Name is required and can not be empty")
     @Length(min = 2, max = 255, message = "Name should be between 2 and 255 characters")
     @JsonProperty( "name")
     private String name;
-
-    @NotNull(message = "Duration is required and can not be empty")
-    @Min(1)
-    @JsonProperty( "duration")
-    private Integer duration;
 }

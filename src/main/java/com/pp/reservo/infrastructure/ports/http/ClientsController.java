@@ -1,8 +1,8 @@
-package com.pp.reservo.infrastructure.ports;
+package com.pp.reservo.infrastructure.ports.http;
 
 import com.pp.reservo.domain.dto.ClientDTO;
 import com.pp.reservo.domain.entities.Client;
-import com.pp.reservo.domain.models.requests.CreateClientRequest;
+import com.pp.reservo.domain.models.requests.StoreClientRequest;
 import com.pp.reservo.infrastructure.services.ClientService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -42,9 +42,9 @@ public class ClientsController {
     }
 
     @PostMapping
-    public ResponseEntity<Client> addClient(@Valid @RequestBody CreateClientRequest client) {
+    public ResponseEntity<Client> storeClient(@Valid @RequestBody StoreClientRequest client) {
         this.clientService
-                .addClient(this.modelMapper.map(client, ClientDTO.class));
+                .storeClient(this.modelMapper.map(client, ClientDTO.class));
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

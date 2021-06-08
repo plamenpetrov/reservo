@@ -1,8 +1,8 @@
-package com.pp.reservo.infrastructure.ports;
+package com.pp.reservo.infrastructure.ports.http;
 
 import com.pp.reservo.domain.dto.AppointmentDTO;
 import com.pp.reservo.domain.entities.Appointment;
-import com.pp.reservo.domain.models.requests.CreateAppointmentRequest;
+import com.pp.reservo.domain.models.requests.StoreAppointmentRequest;
 import com.pp.reservo.infrastructure.services.AppointmentService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -42,9 +42,9 @@ public class AppointmentController {
     }
 
     @PostMapping
-    public ResponseEntity<Appointment> addAppointment(@Valid @RequestBody CreateAppointmentRequest appointment) {
+    public ResponseEntity<Appointment> storeAppointment(@Valid @RequestBody StoreAppointmentRequest appointment) {
         this.appointmentService
-                .addAppointment(this.modelMapper.map(appointment, AppointmentDTO.class));
+                .storeAppointment(this.modelMapper.map(appointment, AppointmentDTO.class));
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

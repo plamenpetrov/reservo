@@ -1,11 +1,15 @@
 package com.pp.reservo.infrastructure.ports.kafka.listener;
 
+import com.pp.reservo.domain.commands.clients.CreateClientCommand;
+import com.pp.reservo.domain.commands.clients.DeleteClientCommand;
+import com.pp.reservo.domain.commands.clients.UpdateClientCommand;
+import com.pp.reservo.domain.common.CommandExecutor;
 import com.pp.reservo.domain.dto.ClientDTO;
-import com.pp.reservo.domain.dto.event.ClientCreatedDataEventDTO;
+import com.pp.reservo.domain.dto.event.client.ClientCreatedDataEventDTO;
+import com.pp.reservo.domain.dto.event.client.ClientDeletedDataEventDTO;
+import com.pp.reservo.domain.dto.event.client.ClientUpdatedDataEventDTO;
 import com.pp.reservo.infrastructure.ports.kafka.ClientsEventSink;
 import com.pp.reservo.infrastructure.ports.kafka.event.BaseEvent;
-import com.pp.reservo.infrastructure.ports.kafka.publisher.ClientsPublisher;
-import com.pp.reservo.infrastructure.services.ClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -14,10 +18,6 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.UUID;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -25,35 +25,50 @@ import java.util.UUID;
 public class ClientsListener {
 
     private final ModelMapper modelMapper;
-    private final ClientService clientService;
 
     @Autowired
-    private ClientsPublisher clientsPublisher;
+    private final CommandExecutor commandExecutor;
+
+    @Autowired
+    private final CreateClientCommand createClientCommand;
+
+    @Autowired
+    private final UpdateClientCommand updateClientCommand;
+
+    @Autowired
+    private final DeleteClientCommand deleteClientCommand;
 
     @StreamListener(
             value = ClientsEventSink.CLIENTS_TOPIC_COMMANDS,
             condition = "payload.type matches 'com.pp.reservo.createClient'"
     )
     public void onClientCreated(BaseEvent<ClientCreatedDataEventDTO> event) {
-        ClientDTO clientDto = new ClientDTO();
-        clientDto.setName(event.getData().getName());
+        ClientDTO clientDto = this.modelMapper.map(event.getData(), ClientDTO.class);
 
-        this.clientService.addClient(clientDto);
+        createClientCommand.setClientDto(clientDto);
 
-        ClientCreatedDataEventDTO clientCreatedDataEventDTO = this.modelMapper.map(clientDto, ClientCreatedDataEventDTO.class);
-
-        clientsPublisher.publishClientCreated(buildMessage(clientCreatedDataEventDTO));
+        commandExecutor.executeCommand(createClientCommand);
     }
 
-    private BaseEvent<ClientCreatedDataEventDTO> buildMessage(ClientCreatedDataEventDTO clientData) {
-        return new BaseEvent<>(
-                "1.0",
-                "com.pp.reservo.clientCreated",
-                "/api/clients",
-                UUID.randomUUID().toString(),
-                new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()),
-                "application/json",
-                clientData
-        );
+    @StreamListener(
+            value = ClientsEventSink.CLIENTS_TOPIC_COMMANDS,
+            condition = "payload.type matches 'com.pp.reservo.updateClient'"
+    )
+    public void onClientUpdated(BaseEvent<ClientUpdatedDataEventDTO> event) {
+        ClientDTO clientDto = this.modelMapper.map(event.getData(), ClientDTO.class);
+
+        updateClientCommand.setClientDto(clientDto);
+
+        commandExecutor.executeCommand(updateClientCommand);
+    }
+
+    @StreamListener(
+            value = ClientsEventSink.CLIENTS_TOPIC_COMMANDS,
+            condition = "payload.type matches 'com.pp.reservo.deleteClient'"
+    )
+    public void onClientDeleted(BaseEvent<ClientDeletedDataEventDTO> event) {
+        deleteClientCommand.setClientId(event.getData().getClientId());
+
+        commandExecutor.executeCommand(deleteClientCommand);
     }
 }

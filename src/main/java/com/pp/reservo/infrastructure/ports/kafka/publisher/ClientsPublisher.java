@@ -1,6 +1,6 @@
 package com.pp.reservo.infrastructure.ports.kafka.publisher;
 
-import com.pp.reservo.domain.dto.event.ClientCreatedDataEventDTO;
+import com.pp.reservo.domain.dto.event.client.ClientCreatedDataEventDTO;
 import com.pp.reservo.infrastructure.ports.kafka.ClientsEventSink;
 import com.pp.reservo.infrastructure.ports.kafka.event.BaseEvent;
 import lombok.extern.slf4j.Slf4j;

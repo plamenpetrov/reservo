@@ -41,7 +41,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeDTO addEmployee(EmployeeDTO employeeDTO) {
+    public EmployeeDTO storeEmployee(EmployeeDTO employeeDTO) {
         this.employeeRepository
                 .saveAndFlush(this.modelMapper.map(employeeDTO, Employee.class));
 

@@ -41,7 +41,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public AppointmentDTO addAppointment(AppointmentDTO appointmentDTO) {
+    public AppointmentDTO storeAppointment(AppointmentDTO appointmentDTO) {
         this.appointmentRepository
                 .saveAndFlush(this.modelMapper
                         .map(appointmentDTO, Appointment.class));

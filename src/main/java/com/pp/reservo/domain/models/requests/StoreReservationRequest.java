@@ -12,7 +12,11 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class CreateReservationRequest {
+public class StoreReservationRequest {
+
+    @Min(1)
+    @JsonProperty( "reservation_id")
+    private Integer reservationId;
 
     @NotNull(message = "Appointment id is required and can not be empty")
     @Min(1)

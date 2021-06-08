@@ -71,7 +71,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationDTO addReservation(ReservationDTO reservationDTO) {
+    public ReservationDTO storeReservation(ReservationDTO reservationDTO) {
         this.reservationRepository
                 .saveAndFlush(convertToEntity(reservationDTO));
 

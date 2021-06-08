@@ -10,7 +10,7 @@ public interface EmployeeService {
 
     EmployeeDTO getEmployeeById(Integer employeeId) throws EntityNotFoundException;
 
-    EmployeeDTO addEmployee(EmployeeDTO employeeDTO);
+    EmployeeDTO storeEmployee(EmployeeDTO employeeDTO);
 
     void deleteEmployee(Integer employeeId);
 }

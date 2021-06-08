@@ -1,4 +1,4 @@
-package com.pp.reservo.domain.dto.event;
+package com.pp.reservo.domain.dto.event.employee;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientCreatedDataEventDTO {
+public class EmployeeUpdatedDataEventDTO {
+    String id;
     String name;
 }

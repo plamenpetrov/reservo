@@ -1,8 +1,8 @@
-package com.pp.reservo.infrastructure.ports;
+package com.pp.reservo.infrastructure.ports.http;
 
 import com.pp.reservo.domain.dto.EmployeeDTO;
 import com.pp.reservo.domain.entities.Employee;
-import com.pp.reservo.domain.models.requests.CreateEmployeeRequest;
+import com.pp.reservo.domain.models.requests.StoreEmployeeRequest;
 import com.pp.reservo.infrastructure.exceptions.EntityNotFoundException;
 import com.pp.reservo.infrastructure.services.EmployeeService;
 import org.modelmapper.ModelMapper;
@@ -43,9 +43,9 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<Employee> addEmployee(@Valid @RequestBody CreateEmployeeRequest employee) {
+    public ResponseEntity<Employee> storeEmployee(@Valid @RequestBody StoreEmployeeRequest employee) {
         this.employeeService
-                .addEmployee(this.modelMapper.map(employee, EmployeeDTO.class));
+                .storeEmployee(this.modelMapper.map(employee, EmployeeDTO.class));
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
