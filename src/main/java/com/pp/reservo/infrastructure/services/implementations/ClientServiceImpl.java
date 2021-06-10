@@ -58,8 +58,8 @@ public class ClientServiceImpl implements ClientService {
         return clientDTO;
     }
 
-    private void publishEvent(BaseDataEventDTO clientDataEventDTO) {
-        clientsPublisher.publishEvent(eventMessageBuilder.buildMessage(clientDataEventDTO));
+    private void publishEvent(BaseDataEventDTO eventDataEventDTO) {
+        clientsPublisher.publishEvent(eventMessageBuilder.buildMessage(eventDataEventDTO));
     }
 
     private void publishEventClientChange(ClientDTO clientDTO) {
