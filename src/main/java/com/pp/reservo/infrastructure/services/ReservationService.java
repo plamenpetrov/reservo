@@ -13,7 +13,7 @@ public interface ReservationService {
 
     ReservationDTO getReservationById(Integer reservationId) throws EntityNotFoundException;
 
-    ReservationDTO addReservation(ReservationDTO reservationDTO);
+    ReservationDTO storeReservation(ReservationDTO reservationDTO);
 
     void deleteReservation(Integer reservationId);
 

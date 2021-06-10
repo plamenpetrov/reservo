@@ -1,8 +1,8 @@
-package com.pp.reservo.infrastructure.ports;
+package com.pp.reservo.infrastructure.ports.http;
 
 import com.pp.reservo.domain.dto.ReservationDTO;
 import com.pp.reservo.domain.entities.Reservation;
-import com.pp.reservo.domain.models.requests.CreateReservationRequest;
+import com.pp.reservo.domain.models.requests.StoreReservationRequest;
 import com.pp.reservo.domain.models.response.BaseReservationsByClientResponseDTO;
 import com.pp.reservo.domain.models.response.BaseReservationsByEmployeeResponseDTO;
 import com.pp.reservo.infrastructure.exceptions.EntityNotFoundException;
@@ -51,10 +51,10 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<Reservation> addReservation(@Valid @RequestBody CreateReservationRequest reservation, BindingResult errors
+    public ResponseEntity<Reservation> storeReservation(@Valid @RequestBody StoreReservationRequest reservation, BindingResult errors
     ) {
         this.reservationService
-                .addReservation(this.modelMapper.map(reservation, ReservationDTO.class));
+                .storeReservation(this.modelMapper.map(reservation, ReservationDTO.class));
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

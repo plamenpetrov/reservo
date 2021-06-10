@@ -9,7 +9,7 @@ public interface AppointmentService {
 
     AppointmentDTO getAppointmentById(Integer appointmentId);
 
-    AppointmentDTO addAppointment(AppointmentDTO appointmentDTO);
+    AppointmentDTO storeAppointment(AppointmentDTO appointmentDTO);
 
     void deleteAppointment(Integer appointmentId);
 }
