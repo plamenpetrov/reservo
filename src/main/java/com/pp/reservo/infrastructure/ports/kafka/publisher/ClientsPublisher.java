@@ -19,7 +19,7 @@ public class ClientsPublisher {
         this.messageChannel = eventSink.onClientEvent();
     }
 
-    public void publishClientCreated(BaseEvent<ClientCreatedDataEventDTO> event) {
+    public void publishEvent(BaseEvent<ClientCreatedDataEventDTO> event) {
         Message<BaseEvent<ClientCreatedDataEventDTO>> message = MessageBuilder.withPayload(event).build();
         this.messageChannel.send(message);
         System.out.println(event);

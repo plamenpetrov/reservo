@@ -1,5 +1,7 @@
 package com.pp.reservo.domain.dto.event.client;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pp.reservo.domain.dto.event.BaseDataEventDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +11,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientUpdatedDataEventDTO {
+public class ClientUpdatedDataEventDTO implements BaseDataEventDTO {
     String id;
     String name;
+
+    @Override
+    @JsonIgnore
+    public String getEventType() {
+        return "com.pp.reservo.clientUpdated";
+    }
+
+    @Override
+    @JsonIgnore
+    public String getEventSource() {
+        return "/api/clients";
+    }
 }

@@ -37,6 +37,26 @@ spring:
       group: reservo-group
       content-type: application/json
       binder: kafka-app
+    appointments-topic-commands:
+      destination: ${KAFKA_APPOINTMENTS_TOPIC_COMMANDS}
+      group: reservo-group
+      content-type: application/json
+      binder: kafka-app
+    appointments-topic-events:
+      destination: ${KAFKA_APPOINTMENTS_TOPIC_EVENTS}
+      group: reservo-group
+      content-type: application/json
+      binder: kafka-app
+    reservations-topic-commands:
+      destination: ${KAFKA_RESERVATIONS_TOPIC_COMMANDS}
+      group: reservo-group
+      content-type: application/json
+      binder: kafka-app
+    reservations-topic-events:
+      destination: ${KAFKA_RESERVATIONS_TOPIC_EVENTS}
+      group: reservo-group
+      content-type: application/json
+      binder: kafka-app
   cloud.stream.binders:
     kafka-app:
       type: kafka

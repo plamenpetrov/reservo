@@ -1,7 +1,10 @@
 package com.pp.reservo.infrastructure.services.implementations;
 
 import com.pp.reservo.domain.dto.ClientDTO;
+import com.pp.reservo.domain.dto.event.BaseDataEventDTO;
 import com.pp.reservo.domain.dto.event.client.ClientCreatedDataEventDTO;
+import com.pp.reservo.domain.dto.event.client.ClientDeletedDataEventDTO;
+import com.pp.reservo.domain.dto.event.client.ClientUpdatedDataEventDTO;
 import com.pp.reservo.domain.entities.Client;
 import com.pp.reservo.domain.repositories.ClientRepository;
 import com.pp.reservo.infrastructure.exceptions.EntityNotFoundException;
@@ -50,16 +53,38 @@ public class ClientServiceImpl implements ClientService {
                 .saveAndFlush(this.modelMapper
                         .map(clientDTO, Client.class));
 
-        ClientCreatedDataEventDTO clientCreatedDataEventDTO = this.modelMapper.map(clientDTO, ClientCreatedDataEventDTO.class);
-
-        clientsPublisher.publishClientCreated(eventMessageBuilder.buildMessage(clientCreatedDataEventDTO));
+        publishEventClientChange(clientDTO);
 
         return clientDTO;
     }
 
+    private void publishEvent(BaseDataEventDTO clientDataEventDTO) {
+        clientsPublisher.publishEvent(eventMessageBuilder.buildMessage(clientDataEventDTO));
+    }
+
+    private void publishEventClientChange(ClientDTO clientDTO) {
+        BaseDataEventDTO clientDataEventDTO = mapDataDTO(clientDTO);
+        publishEvent(clientDataEventDTO);
+    }
+
+    private BaseDataEventDTO mapDataDTO(ClientDTO clientDTO) {
+        if(clientDTO.getId() == null) {
+            return this.modelMapper.map(clientDTO, ClientCreatedDataEventDTO.class);
+        } else {
+            return this.modelMapper.map(clientDTO, ClientUpdatedDataEventDTO.class);
+        }
+    }
+
+    private void publishEventClientDelete(ClientDTO clientDTO) {
+        BaseDataEventDTO clientDataEventDTO = this.modelMapper.map(clientDTO, ClientDeletedDataEventDTO.class);
+        publishEvent(clientDataEventDTO);
+    }
+
     public void deleteClient(Integer clientId) {
         if(clientRepository.existsById(clientId)) {
+            ClientDTO clientDTO = getClientById(clientId);
             clientRepository.deleteById(clientId);
+            publishEventClientDelete(clientDTO);
         }
     }
 }
