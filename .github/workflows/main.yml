@@ -26,8 +26,8 @@ jobs:
           username: $DOCKER_HUB_USER
           password: $DOCKER_HUB_PASS
           
-      - name: Start containers
-        run: docker-compose -f "docker-compose.yml" up -d --build
+#       - name: Start containers
+#         run: docker-compose -f "docker-compose.yml" up -d --build
       
       - name: Push to Docker Hub
         with:
