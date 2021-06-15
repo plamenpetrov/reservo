@@ -15,10 +15,9 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Push to Docker Hub
-        env:
-          APP_USERNAME: "reservo"
-        with:
-          APP_USERNAME: "reservo"
-          file: ./docker/app/Dockerfile
-          push: true
-          tags: bustamista/reservo:latest
+        run: env
+#         with:
+#           APP_USERNAME: "reservo"
+#           file: ./docker/app/Dockerfile
+#           push: true
+#           tags: bustamista/reservo:latest
