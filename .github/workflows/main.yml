@@ -15,12 +15,10 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Push to Docker Hub
-        run: |
-          echo "${{ env.APP_USERNAME }}"
         env:
-          APP_USERNAME: ${{ env.APP_USERNAME }}
-#         with:
-#           APP_USERNAME: ${{ env.APP_USERNAME }}
-#           file: ./docker/app/Dockerfile
-#           push: true
-#           tags: bustamista/reservo:latest
+          APP_USERNAME: "reservo"
+        with:
+          APP_USERNAME: "reservo"
+          file: ./docker/app/Dockerfile
+          push: true
+          tags: bustamista/reservo:latest
