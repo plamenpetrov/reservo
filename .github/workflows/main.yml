@@ -24,6 +24,8 @@ jobs:
         with:
           build-args: |
             APP_USERNAME=${{ secrets.APP_USERNAME }}
+            APP_NAME=${{ secrets.APP_NAME }}
+            APP_VERSION=${{ secrets.APP_VERSION }}
           context: .
           file: ./docker/app/Dockerfile
           push: true
