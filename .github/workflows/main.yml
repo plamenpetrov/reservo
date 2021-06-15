@@ -19,6 +19,7 @@ jobs:
           APP_USERNAME: "reservo"
         uses: docker/build-push-action@v2
         with:
+          APP_USERNAME: ${{ env.APP_USERNAME }}
           file: ./docker/app/Dockerfile
           push: true
           tags: bustamista/reservo:latest
