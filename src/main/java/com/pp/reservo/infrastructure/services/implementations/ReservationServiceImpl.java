@@ -20,6 +20,8 @@ import com.pp.reservo.infrastructure.services.ClientService;
 import com.pp.reservo.infrastructure.services.EmployeeService;
 import com.pp.reservo.infrastructure.services.ReservationService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -29,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.pp.reservo.domain.common.Domain.PAGE_SIZE;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -53,9 +57,29 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<ReservationDTO> getAllReservations(Date byDate) {
+    public List<ReservationDTO> getAllReservations(
+            Date byDate,
+            Integer clientId,
+            Integer employeeId,
+            Integer appointmentId,
+            Integer page,
+            String sortBy
+    ) {
         return this.reservationRepository
-                .findAll(new ReservationSpecification(byDate))
+                .findAll(new ReservationSpecification(
+                        byDate,
+                        clientId,
+                        employeeId,
+                        appointmentId
+                    ),
+
+                    PageRequest.of(
+                        page,
+                        PAGE_SIZE,
+                        Sort.Direction.ASC,
+                        sortBy
+                    )
+                )
                 .stream()
                 .map(r -> this.modelMapper.map(r, ReservationDTO.class))
                 .collect(Collectors.toList());

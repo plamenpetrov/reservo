@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(
@@ -37,9 +38,22 @@ public class ReservationController {
     }
 
     @GetMapping
-    public List<ReservationDTO> getReservations(@RequestParam(required = false)
-                                                            @DateTimeFormat(pattern = "yyyy-MM-dd") Date byDate) {
-        return reservationService.getAllReservations(byDate);
+    public List<ReservationDTO> getReservations(
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date byDate,
+            @RequestParam(required = false) Integer clientId,
+            @RequestParam(required = false) Integer employeeId,
+            @RequestParam(required = false) Integer appointmentId,
+            @RequestParam Optional<Integer> page,
+            @RequestParam Optional<String> sortBy
+    ) {
+        return reservationService.getAllReservations(
+                byDate,
+                clientId,
+                employeeId,
+                appointmentId,
+                page.orElse(0),
+                sortBy.orElse("id")
+        );
     }
 
     @RequestMapping(

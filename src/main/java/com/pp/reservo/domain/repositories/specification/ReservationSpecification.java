@@ -15,9 +15,15 @@ import java.util.Date;
 public class ReservationSpecification implements Specification<Reservation> {
 
     private final Date byDate;
+    private final Integer client;
+    private final Integer employee;
+    private final Integer appointment;
 
-    public ReservationSpecification(Date byDate) {
+    public ReservationSpecification(Date byDate, Integer client, Integer employee, Integer appointment) {
         this.byDate = byDate;
+        this.client = client;
+        this.employee = employee;
+        this.appointment = appointment;
     }
 
     @Override
@@ -30,20 +36,23 @@ public class ReservationSpecification implements Specification<Reservation> {
             );
         }
 
-//        if (bookTitle != null) {
-//            Subquery<Book> bookSubquery = query.subquery(Book.class);
-//            Root<Book> subqueryRoot = bookSubquery.from(Book.class);
-//            bookSubquery.select(subqueryRoot);
-//
-//            bookSubquery.where(
-//                    criteriaBuilder.and(
-//                            criteriaBuilder.equal(root, subqueryRoot.get("author")),
-//                            criteriaBuilder.equal(subqueryRoot.get("title"), bookTitle)
-//                    )
-//            );
-//
-//            p.getExpressions().add(criteriaBuilder.exists(bookSubquery));
-//        }
+        if (client != null) {
+            p.getExpressions().add(
+                    criteriaBuilder.and(criteriaBuilder.equal(root.get("client"), client))
+            );
+        }
+
+        if (employee != null) {
+            p.getExpressions().add(
+                    criteriaBuilder.and(criteriaBuilder.equal(root.get("employee"), employee))
+            );
+        }
+
+        if (appointment != null) {
+            p.getExpressions().add(
+                    criteriaBuilder.and(criteriaBuilder.equal(root.get("appointment"), appointment))
+            );
+        }
 
         return p;
     }
@@ -56,5 +65,4 @@ public class ReservationSpecification implements Specification<Reservation> {
 
         return Timestamp.valueOf(localDateTime);
     }
-
 }

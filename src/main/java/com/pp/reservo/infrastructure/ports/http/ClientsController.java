@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(
@@ -29,8 +30,12 @@ public class ClientsController {
     }
 
     @GetMapping
-    public List<ClientDTO> getClients() {
-        return clientService.getAllClients();
+    public List<ClientDTO> getClients(
+            @RequestParam(required = false) String byName,
+            @RequestParam Optional<Integer> page,
+            @RequestParam Optional<String> sortBy
+    ) {
+        return clientService.getAllClients(byName, page.orElse(0), sortBy.orElse("id"));
     }
 
     @RequestMapping(
