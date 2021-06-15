@@ -19,9 +19,8 @@ jobs:
           echo "${{ env.APP_USERNAME }}"
         env:
           APP_USERNAME: ${{ env.APP_USERNAME }}
-        uses: docker/build-push-action@v2
-        with:
-          APP_USERNAME: ${{ env.APP_USERNAME }}
-          file: ./docker/app/Dockerfile
-          push: true
-          tags: bustamista/reservo:latest
+#         with:
+#           APP_USERNAME: ${{ env.APP_USERNAME }}
+#           file: ./docker/app/Dockerfile
+#           push: true
+#           tags: bustamista/reservo:latest
