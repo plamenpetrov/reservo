@@ -7,15 +7,20 @@ import com.pp.reservo.domain.dto.event.client.ClientDeletedDataEventDTO;
 import com.pp.reservo.domain.dto.event.client.ClientUpdatedDataEventDTO;
 import com.pp.reservo.domain.entities.Client;
 import com.pp.reservo.domain.repositories.ClientRepository;
+import com.pp.reservo.domain.repositories.specification.ClientSpecification;
 import com.pp.reservo.infrastructure.exceptions.EntityNotFoundException;
 import com.pp.reservo.infrastructure.ports.kafka.builders.BaseEventMessageBuilder;
 import com.pp.reservo.infrastructure.ports.kafka.publisher.ClientsPublisher;
 import com.pp.reservo.infrastructure.services.ClientService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.pp.reservo.domain.common.Domain.PAGE_SIZE;
 
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -32,9 +37,18 @@ public class ClientServiceImpl implements ClientService {
         this.eventMessageBuilder = eventMessageBuilder;
     }
 
-    public List<ClientDTO> getAllClients() {
+    public List<ClientDTO> getAllClients(String byName, Integer page, String sortBy) {
         return this.clientRepository
-                .findAll()
+                .findAll(new ClientSpecification(
+                    byName
+                ),
+
+                PageRequest.of(
+                        page,
+                        PAGE_SIZE,
+                        Sort.Direction.ASC,
+                        sortBy
+                ))
                 .stream()
                 .map(c -> this.modelMapper.map(c, ClientDTO.class))
                 .collect(Collectors.toList());

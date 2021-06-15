@@ -7,15 +7,20 @@ import com.pp.reservo.domain.dto.event.employee.EmployeeDeletedDataEventDTO;
 import com.pp.reservo.domain.dto.event.employee.EmployeeUpdatedDataEventDTO;
 import com.pp.reservo.domain.entities.Employee;
 import com.pp.reservo.domain.repositories.EmployeeRepository;
+import com.pp.reservo.domain.repositories.specification.EmployeeSpecification;
 import com.pp.reservo.infrastructure.exceptions.EntityNotFoundException;
 import com.pp.reservo.infrastructure.ports.kafka.builders.BaseEventMessageBuilder;
 import com.pp.reservo.infrastructure.ports.kafka.publisher.EmployeePublisher;
 import com.pp.reservo.infrastructure.services.EmployeeService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.pp.reservo.domain.common.Domain.PAGE_SIZE;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -33,9 +38,18 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeDTO> getAllEmployees() {
+    public List<EmployeeDTO> getAllEmployees(String byName, Integer page, String sortBy) {
         return this.employeeRepository
-                .findAll()
+                .findAll(new EmployeeSpecification(
+                        byName
+                    ),
+
+                    PageRequest.of(
+                        page,
+                        PAGE_SIZE,
+                        Sort.Direction.ASC,
+                        sortBy
+                ))
                 .stream()
                 .map(a -> this.modelMapper.map(a, EmployeeDTO.class))
                 .collect(Collectors.toList());

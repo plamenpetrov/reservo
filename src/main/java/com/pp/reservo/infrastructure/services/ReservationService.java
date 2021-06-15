@@ -9,7 +9,14 @@ import java.util.Date;
 import java.util.List;
 
 public interface ReservationService {
-    List<ReservationDTO> getAllReservations(Date byDate);
+    List<ReservationDTO> getAllReservations(
+            Date byDate,
+            Integer clientId,
+            Integer employeeId,
+            Integer appointmentId,
+            Integer page,
+            String sortBy
+    );
 
     ReservationDTO getReservationById(Integer reservationId) throws EntityNotFoundException;
 
