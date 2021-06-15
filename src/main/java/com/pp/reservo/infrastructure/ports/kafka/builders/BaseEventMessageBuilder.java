@@ -24,16 +24,4 @@ public class BaseEventMessageBuilder<T> {
                 messageDto
         );
     }
-
-//    public BaseEvent<ClientCreatedDataEventDTO> buildMessage(ClientCreatedDataEventDTO clientData) {
-//        return new BaseEvent<>(
-//                "1.0",
-//                "com.pp.reservo.clientCreated",
-//                "/api/clients",
-//                UUID.randomUUID().toString(),
-//                new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()),
-//                "application/json",
-//                clientData
-//        );
-//    }
 }

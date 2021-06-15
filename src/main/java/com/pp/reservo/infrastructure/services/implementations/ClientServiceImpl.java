@@ -6,11 +6,10 @@ import com.pp.reservo.domain.dto.event.client.ClientCreatedDataEventDTO;
 import com.pp.reservo.domain.dto.event.client.ClientDeletedDataEventDTO;
 import com.pp.reservo.domain.dto.event.client.ClientUpdatedDataEventDTO;
 import com.pp.reservo.domain.entities.Client;
+import com.pp.reservo.domain.events.publishers.ClientEventPublisher;
 import com.pp.reservo.domain.repositories.ClientRepository;
 import com.pp.reservo.domain.repositories.specification.ClientSpecification;
 import com.pp.reservo.infrastructure.exceptions.EntityNotFoundException;
-import com.pp.reservo.infrastructure.ports.kafka.builders.BaseEventMessageBuilder;
-import com.pp.reservo.infrastructure.ports.kafka.publisher.ClientsPublisher;
 import com.pp.reservo.infrastructure.services.ClientService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -27,14 +26,15 @@ public class ClientServiceImpl implements ClientService {
 
     private final ModelMapper modelMapper;
     private final ClientRepository clientRepository;
-    private final ClientsPublisher clientsPublisher;
-    private final BaseEventMessageBuilder eventMessageBuilder;
+    private final ClientEventPublisher clientEventPublisher;
 
-    public ClientServiceImpl(ModelMapper modelMapper, ClientRepository clientRepository, ClientsPublisher clientsPublisher, BaseEventMessageBuilder eventMessageBuilder) {
+    public ClientServiceImpl(ModelMapper modelMapper,
+                             ClientRepository clientRepository,
+                             ClientEventPublisher clientEventPublisher
+    ) {
         this.modelMapper = modelMapper;
         this.clientRepository = clientRepository;
-        this.clientsPublisher = clientsPublisher;
-        this.eventMessageBuilder = eventMessageBuilder;
+        this.clientEventPublisher = clientEventPublisher;
     }
 
     public List<ClientDTO> getAllClients(String byName, Integer page, String sortBy) {
@@ -67,31 +67,24 @@ public class ClientServiceImpl implements ClientService {
                 .saveAndFlush(this.modelMapper
                         .map(clientDTO, Client.class));
 
-        publishEventClientChange(clientDTO);
+        publishEventClientStored(clientDTO);
 
         return clientDTO;
     }
 
-    private void publishEvent(BaseDataEventDTO eventDataEventDTO) {
-        clientsPublisher.publishEvent(eventMessageBuilder.buildMessage(eventDataEventDTO));
-    }
-
-    private void publishEventClientChange(ClientDTO clientDTO) {
-        BaseDataEventDTO clientDataEventDTO = mapDataDTO(clientDTO);
-        publishEvent(clientDataEventDTO);
-    }
-
-    private BaseDataEventDTO mapDataDTO(ClientDTO clientDTO) {
+    private void publishEventClientStored(ClientDTO clientDTO) {
         if(clientDTO.getId() == null) {
-            return this.modelMapper.map(clientDTO, ClientCreatedDataEventDTO.class);
+            ClientCreatedDataEventDTO clientCreatedDataEventDTO = this.modelMapper.map(clientDTO, ClientCreatedDataEventDTO.class);
+            clientEventPublisher.publishClientStored(clientCreatedDataEventDTO);
         } else {
-            return this.modelMapper.map(clientDTO, ClientUpdatedDataEventDTO.class);
+            ClientUpdatedDataEventDTO updatedDataEventDTO = this.modelMapper.map(clientDTO, ClientUpdatedDataEventDTO.class);
+            clientEventPublisher.publishClientStored(updatedDataEventDTO);
         }
     }
 
     private void publishEventClientDelete(ClientDTO clientDTO) {
         BaseDataEventDTO clientDataEventDTO = this.modelMapper.map(clientDTO, ClientDeletedDataEventDTO.class);
-        publishEvent(clientDataEventDTO);
+        clientEventPublisher.publishClientDeleted(clientDataEventDTO);
     }
 
     public void deleteClient(Integer clientId) {

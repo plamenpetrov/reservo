@@ -6,11 +6,10 @@ import com.pp.reservo.domain.dto.event.employee.EmployeeCreatedDataEventDTO;
 import com.pp.reservo.domain.dto.event.employee.EmployeeDeletedDataEventDTO;
 import com.pp.reservo.domain.dto.event.employee.EmployeeUpdatedDataEventDTO;
 import com.pp.reservo.domain.entities.Employee;
+import com.pp.reservo.domain.events.publishers.EmployeeEventPublisher;
 import com.pp.reservo.domain.repositories.EmployeeRepository;
 import com.pp.reservo.domain.repositories.specification.EmployeeSpecification;
 import com.pp.reservo.infrastructure.exceptions.EntityNotFoundException;
-import com.pp.reservo.infrastructure.ports.kafka.builders.BaseEventMessageBuilder;
-import com.pp.reservo.infrastructure.ports.kafka.publisher.EmployeePublisher;
 import com.pp.reservo.infrastructure.services.EmployeeService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -27,14 +26,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final ModelMapper modelMapper;
     private final EmployeeRepository employeeRepository;
-    private final EmployeePublisher employeePublisher;
-    private final BaseEventMessageBuilder eventMessageBuilder;
+    private final EmployeeEventPublisher employeeEventPublisher;
 
-    public EmployeeServiceImpl(ModelMapper modelMapper, EmployeeRepository employeeRepository, EmployeePublisher employeePublisher, BaseEventMessageBuilder eventMessageBuilder) {
+    public EmployeeServiceImpl(ModelMapper modelMapper,
+                               EmployeeRepository employeeRepository,
+                               EmployeeEventPublisher employeeEventPublisher
+    ) {
         this.modelMapper = modelMapper;
         this.employeeRepository = employeeRepository;
-        this.employeePublisher = employeePublisher;
-        this.eventMessageBuilder = eventMessageBuilder;
+        this.employeeEventPublisher = employeeEventPublisher;
     }
 
     @Override
@@ -69,31 +69,24 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.employeeRepository
                 .saveAndFlush(this.modelMapper.map(employeeDTO, Employee.class));
 
-        publishEventEmployeeChange(employeeDTO);
+        publishEventEmployeeStored(employeeDTO);
 
         return employeeDTO;
     }
 
-    private void publishEvent(BaseDataEventDTO eventDataEventDTO) {
-        employeePublisher.publishEvent(eventMessageBuilder.buildMessage(eventDataEventDTO));
-    }
-
-    private void publishEventEmployeeChange(EmployeeDTO employeeDTO) {
-        BaseDataEventDTO employeeDataEventDTO = mapDataDTO(employeeDTO);
-        publishEvent(employeeDataEventDTO);
-    }
-
-    private BaseDataEventDTO mapDataDTO(EmployeeDTO employeeDTO) {
+    private void publishEventEmployeeStored(EmployeeDTO employeeDTO) {
         if(employeeDTO.getId() == null) {
-            return this.modelMapper.map(employeeDTO, EmployeeCreatedDataEventDTO.class);
+            EmployeeCreatedDataEventDTO employeeCreatedDataEventDTO = this.modelMapper.map(employeeDTO, EmployeeCreatedDataEventDTO.class);
+            employeeEventPublisher.publishEmployeeStored(employeeCreatedDataEventDTO);
         } else {
-            return this.modelMapper.map(employeeDTO, EmployeeUpdatedDataEventDTO.class);
+            EmployeeUpdatedDataEventDTO employeeUpdatedDataEventDTO = this.modelMapper.map(employeeDTO, EmployeeUpdatedDataEventDTO.class);
+            employeeEventPublisher.publishEmployeeStored(employeeUpdatedDataEventDTO);
         }
     }
 
     private void publishEventEmployeeDelete(EmployeeDTO employeeDTO) {
         BaseDataEventDTO employeeDataEventDTO = this.modelMapper.map(employeeDTO, EmployeeDeletedDataEventDTO.class);
-        publishEvent(employeeDataEventDTO);
+        employeeEventPublisher.publishEmployeeDeleted(employeeDataEventDTO);
     }
 
     @Override
