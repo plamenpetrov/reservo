@@ -6,11 +6,11 @@ import com.pp.reservo.domain.dto.event.appointment.AppointmentCreatedDataEventDT
 import com.pp.reservo.domain.dto.event.appointment.AppointmentDeletedDataEventDTO;
 import com.pp.reservo.domain.dto.event.appointment.AppointmentUpdatedDataEventDTO;
 import com.pp.reservo.domain.entities.Appointment;
+import com.pp.reservo.domain.events.publishers.AppointmentEventPublisher;
 import com.pp.reservo.domain.repositories.AppointmentRepository;
 import com.pp.reservo.domain.repositories.specification.AppointmentSpecification;
 import com.pp.reservo.infrastructure.exceptions.EntityNotFoundException;
 import com.pp.reservo.infrastructure.ports.kafka.builders.BaseEventMessageBuilder;
-import com.pp.reservo.infrastructure.ports.kafka.publisher.AppointmentPublisher;
 import com.pp.reservo.infrastructure.services.AppointmentService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -27,14 +27,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     private final ModelMapper modelMapper;
     private final AppointmentRepository appointmentRepository;
-    private final AppointmentPublisher appointmentPublisher;
-    private final BaseEventMessageBuilder eventMessageBuilder;
+    private final AppointmentEventPublisher appointmentEventPublisher;
 
-    public AppointmentServiceImpl(ModelMapper modelMapper, AppointmentRepository appointmentRepository, AppointmentPublisher appointmentPublisher, BaseEventMessageBuilder eventMessageBuilder) {
+    public AppointmentServiceImpl(ModelMapper modelMapper, AppointmentRepository appointmentRepository, AppointmentEventPublisher appointmentEventPublisher, BaseEventMessageBuilder eventMessageBuilder) {
         this.modelMapper = modelMapper;
         this.appointmentRepository = appointmentRepository;
-        this.appointmentPublisher = appointmentPublisher;
-        this.eventMessageBuilder = eventMessageBuilder;
+        this.appointmentEventPublisher = appointmentEventPublisher;
     }
 
     @Override
@@ -72,31 +70,24 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .saveAndFlush(this.modelMapper
                         .map(appointmentDTO, Appointment.class));
 
-        publishEventAppointmentChange(appointmentDTO);
+        publishEventAppointmentStored(appointmentDTO);
 
         return appointmentDTO;
     }
 
-    private void publishEvent(BaseDataEventDTO eventDataEventDTO) {
-        appointmentPublisher.publishEvent(eventMessageBuilder.buildMessage(eventDataEventDTO));
-    }
-
-    private void publishEventAppointmentChange(AppointmentDTO appointmentDTO) {
-        BaseDataEventDTO appointmentDataEventDTO = mapDataDTO(appointmentDTO);
-        publishEvent(appointmentDataEventDTO);
-    }
-
-    private BaseDataEventDTO mapDataDTO(AppointmentDTO appointmentDTO) {
+    private void publishEventAppointmentStored(AppointmentDTO appointmentDTO) {
         if(appointmentDTO.getId() == null) {
-            return this.modelMapper.map(appointmentDTO, AppointmentCreatedDataEventDTO.class);
+            AppointmentCreatedDataEventDTO appointmentCreatedDataEventDTO = this.modelMapper.map(appointmentDTO, AppointmentCreatedDataEventDTO.class);
+            appointmentEventPublisher.publishAppointmentStored(appointmentCreatedDataEventDTO);
         } else {
-            return this.modelMapper.map(appointmentDTO, AppointmentUpdatedDataEventDTO.class);
+            AppointmentUpdatedDataEventDTO appointmentUpdatedDataEventDTO = this.modelMapper.map(appointmentDTO, AppointmentUpdatedDataEventDTO.class);
+            appointmentEventPublisher.publishAppointmentStored(appointmentUpdatedDataEventDTO);
         }
     }
 
     private void publishEventAppointmentDelete(AppointmentDTO appointmentDTO) {
         BaseDataEventDTO appointmentDataEventDTO = this.modelMapper.map(appointmentDTO, AppointmentDeletedDataEventDTO.class);
-        publishEvent(appointmentDataEventDTO);
+        appointmentEventPublisher.publishAppointmentDeleted(appointmentDataEventDTO);
     }
 
     @Override
