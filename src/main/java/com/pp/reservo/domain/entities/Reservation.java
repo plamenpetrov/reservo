@@ -25,15 +25,15 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "employe_id")
-    Employee employee;
+    private Employee employee;
 
     @ManyToOne
     @JoinColumn(name = "appointment_id")
-    Appointment appointment;
+    private Appointment appointment;
 
     @ManyToOne
     @JoinColumn(name = "client_id")
-    Client client;
+    private Client client;
 
     @Column(name = "duration", nullable = false)
     @Min(0)

@@ -7,15 +7,20 @@ import com.pp.reservo.domain.dto.event.appointment.AppointmentDeletedDataEventDT
 import com.pp.reservo.domain.dto.event.appointment.AppointmentUpdatedDataEventDTO;
 import com.pp.reservo.domain.entities.Appointment;
 import com.pp.reservo.domain.repositories.AppointmentRepository;
+import com.pp.reservo.domain.repositories.specification.AppointmentSpecification;
 import com.pp.reservo.infrastructure.exceptions.EntityNotFoundException;
 import com.pp.reservo.infrastructure.ports.kafka.builders.BaseEventMessageBuilder;
 import com.pp.reservo.infrastructure.ports.kafka.publisher.AppointmentPublisher;
 import com.pp.reservo.infrastructure.services.AppointmentService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.pp.reservo.domain.common.Domain.PAGE_SIZE;
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
@@ -33,9 +38,20 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<AppointmentDTO> getAllAppointments() {
+    public List<AppointmentDTO> getAllAppointments(String byName, Integer fromDuration, Integer toDuration, Integer page, String sortBy) {
         return this.appointmentRepository
-                .findAll()
+                .findAll(new AppointmentSpecification(
+                        byName,
+                        fromDuration,
+                        toDuration
+                ),
+
+                PageRequest.of(
+                        page,
+                        PAGE_SIZE,
+                        Sort.Direction.ASC,
+                        sortBy
+                ))
                 .stream()
                 .map(a -> this.modelMapper.map(a, AppointmentDTO.class))
                 .collect(Collectors.toList());

@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
+
+import static com.pp.reservo.domain.common.Domain.DEFAULT_END_DURATION_FILTER;
 
 @RestController
 @RequestMapping(
@@ -29,8 +32,14 @@ public class AppointmentController {
     }
 
     @GetMapping
-    public List<AppointmentDTO> getAppointments() {
-        return appointmentService.getAllAppointments();
+    public List<AppointmentDTO> getAppointments(
+            @RequestParam(required = false) String byName,
+            @RequestParam Optional<Integer> fromDuration,
+            @RequestParam Optional<Integer> toDuration,
+            @RequestParam Optional<Integer> page,
+            @RequestParam Optional<String> sortBy
+    ) {
+        return appointmentService.getAllAppointments(byName, fromDuration.orElse(0), toDuration.orElse(DEFAULT_END_DURATION_FILTER), page.orElse(0), sortBy.orElse("id"));
     }
 
     @RequestMapping(

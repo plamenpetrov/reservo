@@ -5,7 +5,7 @@ import com.pp.reservo.domain.dto.ClientDTO;
 import java.util.List;
 
 public interface ClientService {
-    List<ClientDTO> getAllClients();
+    List<ClientDTO> getAllClients(String byName, Integer page, String sortBy);
 
     ClientDTO getClientById(Integer clientId);
 

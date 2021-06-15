@@ -5,7 +5,7 @@ import com.pp.reservo.domain.dto.AppointmentDTO;
 import java.util.List;
 
 public interface AppointmentService {
-    List<AppointmentDTO> getAllAppointments();
+    List<AppointmentDTO> getAllAppointments(String byName, Integer fromDuration, Integer toDuration, Integer page, String sortBy);
 
     AppointmentDTO getAppointmentById(Integer appointmentId);
 
