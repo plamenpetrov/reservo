@@ -1,0 +1,16 @@
+spring:
+  profiles: test
+  cloud:
+    vault:
+      enabled: false
+  datasource:
+    url: jdbc:h2:mem:~/test;DB_CLOSE_DELAY=-1;INIT=CREATE SCHEMA IF NOT EXISTS RESERVO
+    driver-class-name: org.h2.Driver
+    username: test
+    password: test
+    platform: mysql
+    initialization-mode: always
+  database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true

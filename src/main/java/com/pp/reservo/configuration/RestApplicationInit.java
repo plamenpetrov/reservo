@@ -9,11 +9,13 @@ import com.pp.reservo.domain.repositories.ClientRepository;
 import com.pp.reservo.domain.repositories.EmployeeRepository;
 import com.pp.reservo.domain.repositories.ReservationRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
+@Profile("!test")
 @Component
 public class RestApplicationInit implements CommandLineRunner {
 
