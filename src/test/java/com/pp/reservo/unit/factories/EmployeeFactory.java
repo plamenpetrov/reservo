@@ -17,7 +17,7 @@ public class EmployeeFactory {
 
         Employee employee = new Employee();
 
-        employee.setId(faker.number().numberBetween(1, 10000));
+//        employee.setId(faker.number().numberBetween(1, 10000));
         employee.setName(faker.name().firstName());
         employee.setActive(true);
         employee.setCreatedAt(new Timestamp(System.currentTimeMillis()));

@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.pp.reservo.domain.common.Domain.PAGE_SIZE;
@@ -38,37 +39,61 @@ public class ClientServiceImpl implements ClientService {
     }
 
     public List<ClientDTO> getAllClients(String byName, Integer page, String sortBy) {
-        return this.clientRepository
-                .findAll(new ClientSpecification(
-                    byName
-                ),
+        PageRequest pageable = PageRequest.of(
+                page,
+                PAGE_SIZE,
+                Sort.Direction.ASC,
+                sortBy
+        );
 
-                PageRequest.of(
-                        page,
-                        PAGE_SIZE,
-                        Sort.Direction.ASC,
-                        sortBy
-                ))
+        ClientSpecification specification = getSpecificationInstance(byName);
+
+        return this.clientRepository
+                .findAll(specification, pageable)
                 .stream()
                 .map(c -> this.modelMapper.map(c, ClientDTO.class))
                 .collect(Collectors.toList());
     }
 
+    public ClientSpecification getSpecificationInstance(String byName) {
+        return new ClientSpecification(byName);
+    }
+
     public ClientDTO getClientById(Integer clientId) {
-        return this.clientRepository
-                .findById(clientId)
-                .map(c -> this.modelMapper.map(c, ClientDTO.class))
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Client with the given id was not found!"));
+        Optional<Client> clientOptional = findById(clientId);
+
+        if (clientOptional.isPresent()) {
+            ClientDTO clientDTO = convertToDto(clientOptional.get());
+            return clientDTO;
+        }
+
+        throw new EntityNotFoundException("Client with the given id was not found!");
+    }
+
+    private ClientDTO convertToDto(Client client) {
+        ClientDTO clientDTO = new ClientDTO();
+        clientDTO.setId(client.getId());
+        clientDTO.setName(client.getName());
+
+        return clientDTO;
+    }
+
+    private Client convertToEntity(ClientDTO clientDTO) {
+        Client client = new Client();
+        client.setId(clientDTO.getId());
+        client.setName(clientDTO.getName());
+
+        return client;
+    }
+
+    public Optional<Client> findById(Integer clientId) {
+        return this.clientRepository.findById(clientId);
     }
 
     public ClientDTO storeClient(ClientDTO clientDTO) {
-        this.clientRepository
-                .saveAndFlush(this.modelMapper
-                        .map(clientDTO, Client.class));
-
+        Client client = convertToEntity(clientDTO);
+        this.clientRepository.saveAndFlush(client);
         publishEventClientStored(clientDTO);
-
         return clientDTO;
     }
 

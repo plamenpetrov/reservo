@@ -17,7 +17,7 @@ public class ClientFactory {
 
         Client client = new Client();
 
-        client.setId(faker.number().numberBetween(1, 10000));
+//        client.setId(faker.number().numberBetween(1, 10000));
         client.setName(faker.name().firstName());
         client.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 

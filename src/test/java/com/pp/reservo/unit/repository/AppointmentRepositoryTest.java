@@ -3,7 +3,6 @@ package com.pp.reservo.unit.repository;
 import com.pp.reservo.domain.entities.Appointment;
 import com.pp.reservo.domain.repositories.AppointmentRepository;
 import com.pp.reservo.unit.factories.AppointmentFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -26,22 +25,15 @@ public class AppointmentRepositoryTest {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-    private AppointmentFactory appointmentFactory;
-
-    @BeforeEach
-    public void init() {
-        this.appointmentFactory = new AppointmentFactory();
-    }
-
     @Test
     public void findAllAppointments() {
-        appointmentRepository.save(appointmentFactory.create());
+        appointmentRepository.save(AppointmentFactory.create());
         assertEquals(1, appointmentRepository.findAll().size());
     }
 
     @Test
     public void findAppointmentById() {
-        Appointment appointmentDB = appointmentRepository.save(appointmentFactory.create());
+        Appointment appointmentDB = appointmentRepository.save(AppointmentFactory.create());
 
         Appointment appointment = appointmentRepository.getById(appointmentDB.getId());
         assertNotNull(appointment);
@@ -49,7 +41,7 @@ public class AppointmentRepositoryTest {
 
     @Test
     public void createAppointment() {
-        Appointment appointment = appointmentRepository.save(appointmentFactory.create());
+        Appointment appointment = appointmentRepository.save(AppointmentFactory.create());
 
         Appointment appointmentDB = appointmentRepository.save(appointment);
 
@@ -58,7 +50,7 @@ public class AppointmentRepositoryTest {
 
     @Test
     public void deleteAppointment() {
-        Appointment appointment = appointmentRepository.save(appointmentFactory.create());
+        Appointment appointment = appointmentRepository.save(AppointmentFactory.create());
 
         appointmentRepository.deleteById(appointment.getId());
 

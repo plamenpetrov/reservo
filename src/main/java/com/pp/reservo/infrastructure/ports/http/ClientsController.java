@@ -14,6 +14,9 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
+import static com.pp.reservo.domain.common.Domain.DEFAULT_PAGE;
+import static com.pp.reservo.domain.common.Domain.DEFAULT_SORT_COLUMN;
+
 @RestController
 @RequestMapping(
         value = "/api/clients",
@@ -35,7 +38,7 @@ public class ClientsController {
             @RequestParam Optional<Integer> page,
             @RequestParam Optional<String> sortBy
     ) {
-        return clientService.getAllClients(byName, page.orElse(0), sortBy.orElse("id"));
+        return clientService.getAllClients(byName, page.orElse(DEFAULT_PAGE), sortBy.orElse(DEFAULT_SORT_COLUMN));
     }
 
     @RequestMapping(

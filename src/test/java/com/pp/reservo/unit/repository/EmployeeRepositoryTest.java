@@ -3,7 +3,6 @@ package com.pp.reservo.unit.repository;
 import com.pp.reservo.domain.entities.Employee;
 import com.pp.reservo.domain.repositories.EmployeeRepository;
 import com.pp.reservo.unit.factories.EmployeeFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -26,30 +25,24 @@ public class EmployeeRepositoryTest {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    private EmployeeFactory employeeFactory;
-
-    @BeforeEach
-    public void init() {
-        this.employeeFactory = new EmployeeFactory();
-    }
-
     @Test
     public void findAllEmployees() {
-        employeeRepository.save(employeeFactory.create());
+        employeeRepository.save(EmployeeFactory.create());
         assertEquals(1, employeeRepository.findAll().size());
     }
 
     @Test
     public void findEmployeeById() {
-        Employee employee = employeeRepository.save(employeeFactory.create());
+        Employee employee = employeeRepository.save(EmployeeFactory.create());
 
         Employee employeeDB = employeeRepository.getById(employee.getId());
+
         assertNotNull(employeeDB);
     }
 
     @Test
     public void createEmployee() {
-        Employee employee = employeeFactory.create();
+        Employee employee = EmployeeFactory.create();
 
         Employee employeeDB = employeeRepository.save(employee);
 
@@ -58,7 +51,7 @@ public class EmployeeRepositoryTest {
 
     @Test
     public void deleteEmployee() {
-        Employee employee = employeeRepository.save(employeeFactory.create());
+        Employee employee = employeeRepository.save(EmployeeFactory.create());
 
         employeeRepository.deleteById(employee.getId());
 

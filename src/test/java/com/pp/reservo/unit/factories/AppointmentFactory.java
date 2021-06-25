@@ -17,7 +17,7 @@ public class AppointmentFactory {
 
         Appointment appointment = new Appointment();
 
-        appointment.setId(faker.number().numberBetween(1, 10000));
+//        appointment.setId(faker.number().numberBetween(1, 10000));
         appointment.setName(faker.name().firstName());
         appointment.setDuration(faker.number().numberBetween(1, 1000));
         appointment.setCreatedAt(new Timestamp(System.currentTimeMillis()));

@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(
-        value = "/api/employees",
+        value = "/api/employee",
         produces = {MediaType.APPLICATION_JSON_VALUE}
 )
 public class EmployeeController {

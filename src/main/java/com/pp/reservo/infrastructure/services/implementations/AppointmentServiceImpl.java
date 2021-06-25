@@ -10,7 +10,6 @@ import com.pp.reservo.domain.events.publishers.AppointmentEventPublisher;
 import com.pp.reservo.domain.repositories.AppointmentRepository;
 import com.pp.reservo.domain.repositories.specification.AppointmentSpecification;
 import com.pp.reservo.infrastructure.exceptions.EntityNotFoundException;
-import com.pp.reservo.infrastructure.ports.kafka.builders.BaseEventMessageBuilder;
 import com.pp.reservo.infrastructure.services.AppointmentService;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.pp.reservo.domain.common.Domain.PAGE_SIZE;
@@ -29,7 +29,10 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final AppointmentEventPublisher appointmentEventPublisher;
 
-    public AppointmentServiceImpl(ModelMapper modelMapper, AppointmentRepository appointmentRepository, AppointmentEventPublisher appointmentEventPublisher, BaseEventMessageBuilder eventMessageBuilder) {
+    public AppointmentServiceImpl(ModelMapper modelMapper,
+                                  AppointmentRepository appointmentRepository,
+                                  AppointmentEventPublisher appointmentEventPublisher
+    ) {
         this.modelMapper = modelMapper;
         this.appointmentRepository = appointmentRepository;
         this.appointmentEventPublisher = appointmentEventPublisher;
@@ -37,39 +40,63 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public List<AppointmentDTO> getAllAppointments(String byName, Integer fromDuration, Integer toDuration, Integer page, String sortBy) {
-        return this.appointmentRepository
-                .findAll(new AppointmentSpecification(
-                        byName,
-                        fromDuration,
-                        toDuration
-                ),
+        PageRequest pageable = PageRequest.of(
+                page,
+                PAGE_SIZE,
+                Sort.Direction.ASC,
+                sortBy
+        );
 
-                PageRequest.of(
-                        page,
-                        PAGE_SIZE,
-                        Sort.Direction.ASC,
-                        sortBy
-                ))
+        AppointmentSpecification specification = getSpecificationInstance(byName, fromDuration, toDuration);
+
+        return this.appointmentRepository
+                .findAll(specification, pageable)
                 .stream()
                 .map(a -> this.modelMapper.map(a, AppointmentDTO.class))
                 .collect(Collectors.toList());
     }
 
+    public AppointmentSpecification getSpecificationInstance(String byName, Integer fromDuration, Integer toDuration) {
+        return new AppointmentSpecification(byName, fromDuration, toDuration);
+    }
+
     @Override
     public AppointmentDTO getAppointmentById(Integer appointmentId) {
-        return this.appointmentRepository
-                .findById(appointmentId)
-                .map(a -> this.modelMapper.map(a, AppointmentDTO.class))
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Appointment with the given id was not found!"));
+        Optional<Appointment> appointmentOptional = findById(appointmentId);
+
+        if (appointmentOptional.isPresent()) {
+            AppointmentDTO appointmentDTO= convertToDto(appointmentOptional.get());
+            return appointmentDTO;
+        }
+
+        throw new EntityNotFoundException("Appointment with the given id was not found!");
+    }
+
+    private AppointmentDTO convertToDto(Appointment appointment) {
+        AppointmentDTO appointmentDTO = new AppointmentDTO();
+        appointmentDTO.setId(appointment.getId());
+        appointmentDTO.setName(appointment.getName());
+        appointmentDTO.setDuration(appointment.getDuration());
+
+        return appointmentDTO;
+    }
+
+    private Appointment convertToEntity(AppointmentDTO appointmentDTO) {
+        Appointment appointment = new Appointment();
+        appointment.setId(appointmentDTO.getId());
+        appointment.setName(appointmentDTO.getName());
+
+        return appointment;
+    }
+
+    public Optional<Appointment> findById(Integer appointmentId) {
+        return this.appointmentRepository.findById(appointmentId);
     }
 
     @Override
     public AppointmentDTO storeAppointment(AppointmentDTO appointmentDTO) {
-        this.appointmentRepository
-                .saveAndFlush(this.modelMapper
-                        .map(appointmentDTO, Appointment.class));
-
+        Appointment appointment = convertToEntity(appointmentDTO);
+        this.appointmentRepository.saveAndFlush(appointment);
         publishEventAppointmentStored(appointmentDTO);
 
         return appointmentDTO;
