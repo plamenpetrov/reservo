@@ -30,6 +30,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.pp.reservo.domain.common.Domain.PAGE_SIZE;
@@ -65,39 +66,55 @@ public class ReservationServiceImpl implements ReservationService {
             Integer page,
             String sortBy
     ) {
-        return this.reservationRepository
-                .findAll(new ReservationSpecification(
-                        byDate,
-                        clientId,
-                        employeeId,
-                        appointmentId
-                    ),
+        PageRequest pageable = PageRequest.of(
+                page,
+                PAGE_SIZE,
+                Sort.Direction.ASC,
+                sortBy
+        );
 
-                    PageRequest.of(
-                        page,
-                        PAGE_SIZE,
-                        Sort.Direction.ASC,
-                        sortBy
-                    )
-                )
+        ReservationSpecification specification = getSpecificationInstance(byDate, clientId, employeeId, appointmentId);
+
+        return this.reservationRepository
+                .findAll(specification, pageable)
                 .stream()
                 .map(r -> this.modelMapper.map(r, ReservationDTO.class))
                 .collect(Collectors.toList());
     }
 
+    public ReservationSpecification getSpecificationInstance(Date byDate,
+                                                              Integer clientId,
+                                                              Integer employeeId,
+                                                              Integer appointmentId
+    ) {
+        return new ReservationSpecification(
+                byDate,
+                clientId,
+                employeeId,
+                appointmentId
+        );
+    }
+
     @Override
     public ReservationDTO getReservationById(Integer reservationId) throws EntityNotFoundException {
-        return this.reservationRepository
-                .findById(reservationId)
-                .map(r -> this.modelMapper.map(r, ReservationDTO.class))
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Reservation with the given id was not found!"));
+        Optional<Reservation> reservationOptional = findById(reservationId);
+
+        if (reservationOptional.isPresent()) {
+            ReservationDTO reservationDTO = convertToDto(reservationOptional.get());
+            return reservationDTO;
+        }
+
+        throw new EntityNotFoundException("Reservation with the given id was not found!");
+    }
+
+    public Optional<Reservation> findById(Integer reservationId) {
+        return this.reservationRepository.findById(reservationId);
     }
 
     @Override
     public ReservationDTO storeReservation(ReservationDTO reservationDTO) {
-        this.reservationRepository
-                .saveAndFlush(convertToEntity(reservationDTO));
+        Reservation reservation = convertToEntity(reservationDTO);
+        this.reservationRepository.saveAndFlush(reservation);
 
         return reservationDTO;
     }
@@ -117,6 +134,19 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setDuration(appointment.getDuration());
 
         return reservation;
+    }
+
+    private ReservationDTO convertToDto(Reservation reservation) {
+        ReservationDTO reservationDTO = new ReservationDTO();
+
+        reservationDTO.setClientId(reservation.getClient().getId());
+        reservationDTO.setAppointmentId(reservation.getAppointment().getId());
+        reservationDTO.setEmployeeId(reservation.getEmployee().getId());
+
+        reservationDTO.setStartAt(reservation.getStartAt());
+        reservationDTO.setDuration(reservation.getDuration());
+
+        return reservationDTO;
     }
 
     @Override
@@ -178,17 +208,17 @@ public class ReservationServiceImpl implements ReservationService {
         return baseReservationsByEmployeeResponseDTO;
     }
 
-    private Appointment getAppointment(ReservationDTO reservationDTO) {
+    public Appointment getAppointment(ReservationDTO reservationDTO) {
         AppointmentDTO appointmentDTO = appointmentService.getAppointmentById(reservationDTO.getAppointmentId());
         return this.modelMapper.map(appointmentDTO, Appointment.class);
     }
 
-    private Employee getEmployee(ReservationDTO reservationDTO) {
+    public Employee getEmployee(ReservationDTO reservationDTO) {
         EmployeeDTO employeeDTO = employeeService.getEmployeeById(reservationDTO.getEmployeeId());
         return this.modelMapper.map(employeeDTO, Employee.class);
     }
 
-    private Client getClient(ReservationDTO reservationDTO) {
+    public Client getClient(ReservationDTO reservationDTO) {
         ClientDTO clientDTO = clientService.getClientById(reservationDTO.getClientId());
         return this.modelMapper.map(clientDTO, Client.class);
     }

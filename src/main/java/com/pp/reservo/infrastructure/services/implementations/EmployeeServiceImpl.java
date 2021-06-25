@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.pp.reservo.domain.common.Domain.PAGE_SIZE;
@@ -39,36 +40,62 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<EmployeeDTO> getAllEmployees(String byName, Integer page, String sortBy) {
-        return this.employeeRepository
-                .findAll(new EmployeeSpecification(
-                        byName
-                    ),
+        PageRequest pageable = PageRequest.of(
+                page,
+                PAGE_SIZE,
+                Sort.Direction.ASC,
+                sortBy
+        );
 
-                    PageRequest.of(
-                        page,
-                        PAGE_SIZE,
-                        Sort.Direction.ASC,
-                        sortBy
-                ))
+        EmployeeSpecification specification = getSpecificationInstance(byName);
+
+        return this.employeeRepository
+                .findAll(specification, pageable)
                 .stream()
                 .map(a -> this.modelMapper.map(a, EmployeeDTO.class))
                 .collect(Collectors.toList());
     }
 
+    public EmployeeSpecification getSpecificationInstance(String byName) {
+        return new EmployeeSpecification(byName);
+    }
+
     @Override
     public EmployeeDTO getEmployeeById(Integer employeeId) throws EntityNotFoundException {
-        return this.employeeRepository
-                .findById(employeeId)
-                .map(e -> this.modelMapper.map(e, EmployeeDTO.class))
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Employee with the given id was not found!"));
+        Optional<Employee> employeeOptional = findById(employeeId);
+
+        if (employeeOptional.isPresent()) {
+            EmployeeDTO employeeDTO= convertToDto(employeeOptional.get());
+            return employeeDTO;
+        }
+
+        throw new EntityNotFoundException("Employee with the given id was not found!");
+    }
+
+    private EmployeeDTO convertToDto(Employee employee) {
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setId(employee.getId());
+        employeeDTO.setName(employee.getName());
+
+        return employeeDTO;
+    }
+
+    private Employee convertToEntity(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        employee.setId(employeeDTO.getId());
+        employee.setName(employeeDTO.getName());
+
+        return employee;
+    }
+
+    public Optional<Employee> findById(Integer employeeId) {
+        return this.employeeRepository.findById(employeeId);
     }
 
     @Override
     public EmployeeDTO storeEmployee(EmployeeDTO employeeDTO) {
-        this.employeeRepository
-                .saveAndFlush(this.modelMapper.map(employeeDTO, Employee.class));
-
+        Employee employee = convertToEntity(employeeDTO);
+        this.employeeRepository.saveAndFlush(employee);
         publishEventEmployeeStored(employeeDTO);
 
         return employeeDTO;
